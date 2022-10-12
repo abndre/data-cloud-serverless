@@ -1,7 +1,21 @@
+service: lambda-aws-template
+
+
 provider:
   name: aws
   runtime: python3.8
+  region: ${self:custom.config.region} 
+  # region: ${self.custom.region} # -- outro modo de coletar, do custom neste caso
 
 functions:
-  hello:
-    handler: handler.lambda_handler
+  hello_lambda: # the name of lambda is service + _ + hello_lambda
+    handler: src.handler.lambda_handler
+    timeout: 60 # segundos
+    description: Description of lambda
+    memorySize: 128 #MB
+    enviroment:
+      AWS_BUCKET: "bucket_name"
+
+# configuracoes dos stages
+custom:
+  region: ${self:custom.config.region} # coleta regiao do arquivo na pasta stages
