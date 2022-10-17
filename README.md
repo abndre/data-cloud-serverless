@@ -10,3 +10,15 @@ for help how to build some pipelines, using the
 ## [Lambda](/aws-lambda-example/)
 
 How to create a lambda with serverless
+
+```
+serverless deploy --stage dev
+```
+
+In folder is possible to use
+
+```
+npm run deploy:dev
+```
+
+This reference can be see in [package.json](/aws-lambda-example/package.json)

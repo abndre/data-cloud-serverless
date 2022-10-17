@@ -1,11 +1,32 @@
 service: lambda-aws-template
 
+# files in zip
+# this is so importante to avoid to creat a big zip file
+package:
+    exclude:
+        - ./**
+        - build/**
+        - package.json
+        - package-lock.json
+        - node_modules/*
+        - node_modules/
+    include:
+        - src/lambda/lambda_handler.py
+        - '!node_modules/**'
+    excludeDevDependencies: true
 
 provider:
   name: aws
   runtime: python3.8
   region: ${self:custom.config.region} 
-  # region: ${self.custom.region} # -- outro modo de coletar, do custom neste caso
+  # region: ${self.custom.region} # -- outro modo de coletar, direto do custom neste caso
+  # Configure the S3 bucket used by Serverless Framework to deploy code packages to Lambda
+  # this avoid serverless creat a new bucket for each deploy
+  deploymentBucket:
+    # On deployment, serverless prunes artifacts older than this limit (template-lambda-data-default: 5)
+    name: ${self:custom.deploymentBucket}
+    maxPreviousDeploymentArtifacts: 1
+    
 
 functions:
   hello_lambda: # the name of lambda is service + _ + hello_lambda
@@ -19,3 +40,5 @@ functions:
 # configuracoes dos stages
 custom:
   region: ${self:custom.config.region} # coleta regiao do arquivo na pasta stages
+  stage: ${self:provider.stage}
+  deploymentBucket: aws-serverlessbucket-${self:custom.stage}
