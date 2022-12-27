@@ -1,0 +1,64 @@
+service: aws-lambda-dynamodb-team # nome utilizado de referencia para todo o projeto
+
+# files in zip
+# this is so importante to avoid to creat a big zip file
+package:
+    exclude:
+        - ./**
+        - build/**
+        - package.json
+        - package-lock.json
+        - node_modules/*
+        - node_modules/
+    include:
+        - src/handler.py
+        - '!node_modules/**'
+    excludeDevDependencies: true
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: ${self:custom.config.region} 
+  # region: ${self.custom.region} # -- outro modo de coletar, direto do custom neste caso
+  # Configure the S3 bucket used by Serverless Framework to deploy code packages to Lambda
+  # this avoid serverless creat a new bucket for each deploy
+  deploymentBucket:
+    # On deployment, serverless prunes artifacts older than this limit (template-lambda-data-default: 5)
+    name: ${self:custom.deploymentBucket}
+    maxPreviousDeploymentArtifacts: 1
+  stackTags:
+    # o component expecifico (ex: toro-authentication-api-hml)
+    component: ${self:service}
+    # visao "mais ampla" no exemplo (ex: authentication inclui a api + o front)
+    project: 'nome-do-projeto'
+    # nome do time para facilitar o controle de projetos e cutos
+    team:  ${self.custom.team}
+
+    
+
+functions:
+  hello_lambda: # nome da funcao lambda: service + env + hello_lambda
+    handler: src.handler.lambda_handler
+    timeout: 60 # segundos
+    description: Description of lambda
+    memorySize: 128 #MB
+    enviroment:
+      AWS_BUCKET: "bucket_name"
+    events:
+      - existingDynamoStream: # a atualmente o plugin nao tem muitos parametros
+          tableName: ${self:custom.database.device}
+          streamType: NEW_IMAGE
+          startingPosition: LATEST  
+
+# configuracoes dos stages
+custom:
+  region: ${self:custom.config.region} # coleta regiao do arquivo na pasta stages
+  stage: ${self:provider.stage}
+  deploymentBucket: aws-serverlessbucket-${self:custom.stage}
+  team: data-team
+  database:
+    device: dynamodb-database-${self:custom.stage}-algo
+
+plugins:
+  - serverless-dynamo-stream-plugin
+  - serverless-plugin-resource-tagging # caso queira taggear os projetos, facilitando o controle de gastos

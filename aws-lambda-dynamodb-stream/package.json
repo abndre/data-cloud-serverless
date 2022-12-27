@@ -1,0 +1,25 @@
+{
+    "name": "aws-lambda-example",
+    "version": "1.4.3",
+    "description": "Projetos serverless ",
+    "scripts": {
+        "deploy:dev": "serverless deploy --stage dev",
+        "deploy:prd": "serverless deploy --stage prd"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:abndre/data-cloud-serverless.git"
+    },
+    "author": "Andre Santos Barros da Silva",
+    "private": true,
+    "license": "ISC",
+    "devDependencies": {
+        "serverless-deployment-bucket": "^1.6.0",
+        "serverless-plugin-resource-tagging": "^1.2.0"
+    },
+    "dependencies": {
+        "aws-sdk": "^2.1231.0",
+        "serverless-dynamo-stream-plugin": "^0.1.5",
+        "serverless-plugin-resource-tagging": "^1.2.0"
+    }
+}
